@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PARADISE · FraudShield</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f5f5f4;
+  --white:#ffffff;
+  --surface:#fafaf9;
+  --border:#e7e5e4;
+  --border2:#d6d3d1;
+  --text:#1c1917;
+  --text2:#78716c;
+  --text3:#a8a29e;
+  --black:#0c0a09;
+  --red:#b91c1c;
+  --red-bg:#fef2f2;
+  --red-border:#fecaca;
+  --amber:#92400e;
+  --amber-bg:#fffbeb;
+  --amber-border:#fde68a;
+  --green:#166534;
+  --green-bg:#f0fdf4;
+  --green-border:#bbf7d0;
+  --mono:'Geist Mono',monospace;
+  --sans:'Geist',sans-serif;
+  --r:10px;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:var(--sans);color:var(--text);font-size:15px}
+
+/* ─── Shell ─── */
+.shell{height:100vh;display:grid;grid-template-rows:58px 1fr}
+.body{display:grid;grid-template-columns:256px 1fr 320px;overflow:hidden;height:100%}
+
+/* ─── Topbar ─── */
+.topbar{
+  background:var(--white);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 28px;gap:24px;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-logo{
+  width:32px;height:32px;background:var(--black);border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;font-weight:600;color:#fff;letter-spacing:.5px;
+  flex-shrink:0;
+}
+.brand-name{font-size:15px;font-weight:700;letter-spacing:-.2px;color:var(--black)}
+.brand-pipe{color:var(--border2);font-size:18px;font-weight:300}
+.brand-sub{font-size:13px;color:var(--text2);font-weight:400}
+.t-sep{width:1px;height:22px;background:var(--border)}
+.t-pill{
+  font-size:11px;font-family:var(--mono);font-weight:500;
+  padding:4px 10px;border-radius:5px;letter-spacing:.3px;
+}
+.t-dark{background:var(--black);color:#fff}
+.t-outline{border:1px solid var(--border2);color:var(--text2);background:transparent}
+.t-right{margin-left:auto;display:flex;align-items:center;gap:20px}
+.live{display:flex;align-items:center;gap:7px;font-size:12px;font-family:var(--mono);color:var(--green);font-weight:500}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#16a34a;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.4)}50%{box-shadow:0 0 0 5px rgba(22,163,74,0)}}
+.t-clock{font-size:12px;font-family:var(--mono);color:var(--text3)}
+.t-user{font-size:13px;color:var(--text2)}
+.t-user strong{color:var(--text);font-weight:600}
+
+/* ─── Sidebar ─── */
+.sidebar{
+  background:var(--white);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;padding:20px 0;
+}
+.s-section{padding:0 14px;margin-bottom:24px}
+.s-label{
+  font-size:10px;font-family:var(--mono);color:var(--text3);
+  letter-spacing:1.5px;text-transform:uppercase;padding:0 10px;margin-bottom:8px;
+}
+.s-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;
+  color:var(--text2);transition:all .15s;margin-bottom:2px;
+}
+.s-item:hover{background:var(--bg);color:var(--text)}
+.s-item.active{background:var(--black);color:#fff}
+.s-item.active svg{stroke:#fff}
+.s-item svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;flex-shrink:0;opacity:.7}
+.s-item.active svg{opacity:1}
+.s-badge{
+  margin-left:auto;font-size:10px;font-family:var(--mono);
+  background:var(--red);color:#fff;padding:2px 6px;border-radius:4px;
+}
+
+/* model card */
+.m-card{
+  margin:auto 14px 0;padding:18px;background:var(--surface);
+  border:1px solid var(--border);border-radius:var(--r);
+}
+.m-card-title{
+  font-size:11px;font-family:var(--mono);color:var(--text3);
+  letter-spacing:1px;text-transform:uppercase;margin-bottom:14px;
+}
+.m-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)}
+.m-row:last-of-type{border-bottom:none}
+.m-lbl{font-size:13px;color:var(--text2)}
+.m-val{font-size:13px;font-family:var(--mono);font-weight:600;color:var(--text)}
+.m-val.g{color:var(--green)}
+.m-bar{height:3px;background:var(--border);border-radius:2px;margin-top:14px;overflow:hidden}
+.m-bar-fill{height:100%;width:95.64%;background:var(--black);border-radius:2px}
+
+/* ─── Main ─── */
+.main{overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:18px}
+
+/* page title */
+.page-title{font-size:22px;font-weight:700;letter-spacing:-.4px;color:var(--black)}
+.page-sub{font-size:13px;color:var(--text2);margin-top:2px}
+
+/* ─── Metrics ─── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.metric{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:22px 24px;transition:box-shadow .2s,transform .2s;cursor:default;
+  box-shadow:0 1px 2px rgba(0,0,0,.04);
+}
+.metric:hover{box-shadow:0 4px 16px rgba(0,0,0,.07);transform:translateY(-1px)}
+.m-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:17px}
+.m-icon.blue{background:#eff6ff}
+.m-icon.red{background:#fef2f2}
+.m-icon.green{background:#f0fdf4}
+.m-icon.amber{background:#fffbeb}
+.metric-label{font-size:12px;color:var(--text2);font-weight:500;margin-bottom:6px}
+.metric-val{font-size:30px;font-weight:700;color:var(--black);font-family:var(--mono);line-height:1;letter-spacing:-.5px;margin-bottom:10px}
+.metric-foot{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text3)}
+.chip{font-size:11px;font-family:var(--mono);padding:2px 7px;border-radius:4px;font-weight:500}
+.chip.up{background:var(--green-bg);color:var(--green)}
+.chip.dn{background:var(--red-bg);color:var(--red)}
+.chip.nu{background:var(--bg);color:var(--text2)}
+
+/* ─── Grid ─── */
+.mid-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.card-hd{
+  padding:18px 22px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{font-size:15px;font-weight:600;color:var(--black)}
+.card-act{font-size:12px;font-family:var(--mono);color:var(--text3);cursor:pointer;transition:color .15s}
+.card-act:hover{color:var(--black)}
+.card-body{padding:20px 22px}
+
+/* stats strip inside card */
+.stat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--border);margin-top:0}
+.stat-cell{padding:14px 22px;border-right:1px solid var(--border)}
+.stat-cell:last-child{border-right:none}
+.stat-label{font-size:11px;font-family:var(--mono);color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px}
+.stat-val{font-size:18px;font-weight:700;font-family:var(--mono);color:var(--black)}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* mini progress bars */
+.progress-list{display:flex;flex-direction:column;gap:14px}
+.prog-item{}
+.prog-head{display:flex;justify-content:space-between;margin-bottom:6px}
+.prog-label{font-size:13px;color:var(--text2)}
+.prog-val{font-size:13px;font-family:var(--mono);font-weight:600;color:var(--text)}
+.prog-bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;background:var(--black)}
+
+/* ─── Table ─── */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{
+  text-align:left;padding:12px 22px;
+  font-size:11px;font-family:var(--mono);font-weight:500;
+  color:var(--text3);letter-spacing:1px;text-transform:uppercase;
+  background:var(--surface);border-bottom:1px solid var(--border);
+}
+tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--surface)}
+tbody td{padding:14px 22px;font-size:13px;vertical-align:middle}
+.td-mono{font-family:var(--mono);color:var(--text2);font-size:12px}
+.td-bold{font-weight:600;font-size:14px;color:var(--black)}
+.td-amt{font-family:var(--mono);font-weight:600;font-size:14px}
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-family:var(--mono);font-weight:500;
+  padding:4px 10px;border-radius:5px;
+}
+.b-safe{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.b-warn{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+.b-danger{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.b-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+
+/* ─── Right Panel ─── */
+.right{background:var(--white);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.rp-head{padding:20px 22px;border-bottom:1px solid var(--border);flex-shrink:0}
+.rp-title{font-size:16px;font-weight:700;color:var(--black);margin-bottom:3px}
+.rp-sub{font-size:12px;color:var(--text3);font-family:var(--mono)}
+.rp-body{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px}
+
+/* ─── Form ─── */
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;font-family:var(--mono);color:var(--text3);letter-spacing:.8px;text-transform:uppercase;font-weight:500}
+.field input,.field select{
+  background:var(--white);border:1px solid var(--border2);border-radius:7px;
+  padding:10px 13px;font-family:var(--mono);font-size:13px;color:var(--text);
+  outline:none;transition:border-color .15s,box-shadow .15s;width:100%;
+}
+.field input:focus,.field select:focus{border-color:var(--black);box-shadow:0 0 0 3px rgba(12,10,9,.06)}
+.field select option{background:var(--white)}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.run-btn{
+  width:100%;padding:12px;background:var(--black);border:none;border-radius:8px;
+  color:#fff;font-family:var(--mono);font-size:12px;font-weight:600;
+  letter-spacing:1px;text-transform:uppercase;cursor:pointer;
+  transition:opacity .15s;
+}
+.run-btn:hover{opacity:.85}
+
+.rp-divider{height:1px;background:var(--border);margin:2px 0}
+
+/* ─── Result ─── */
+.result{display:none;flex-direction:column;gap:12px}
+.result.show{display:flex}
+.verdict{
+  padding:13px 16px;border-radius:8px;
+  display:flex;align-items:center;gap:10px;
+  font-size:14px;font-weight:600;
+}
+.verdict.safe{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green)}
+.verdict.warn{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber)}
+.verdict.danger{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red)}
+.v-icon{font-size:18px}
+.scores{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.sc-val{font-size:22px;font-weight:700;font-family:var(--mono);color:var(--black);line-height:1}
+.sc-lbl{font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-top:4px}
+.meter-wrap{}
+.meter-head{display:flex;justify-content:space-between;font-size:12px;font-family:var(--mono);color:var(--text2);margin-bottom:8px}
+.meter-bar{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;border:1px solid var(--border)}
+.meter-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.flags{display:flex;flex-direction:column;gap:6px}
+.flag{
+  display:flex;align-items:flex-start;gap:9px;padding:10px 13px;
+  background:var(--surface);border:1px solid var(--border);border-radius:7px;
+  font-size:12px;font-family:var(--mono);color:var(--text2);line-height:1.5;
+}
+.flag-dot{width:6px;height:6px;border-radius:50%;background:currentColor;margin-top:4px;flex-shrink:0}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ─── Animations ─── */
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.metric{animation:up .35s ease both}
+.metric:nth-child(1){animation-delay:.04s}
+.metric:nth-child(2){animation-delay:.08s}
+.metric:nth-child(3){animation-delay:.12s}
+.metric:nth-child(4){animation-delay:.16s}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-logo">P</div>
+    <span class="brand-name">PARADISE</span>
+    <span class="brand-pipe">·</span>
+    <span class="brand-sub">FraudShield</span>
+  </div>
+  <div class="t-sep"></div>
+  <span class="t-pill t-dark">v2.0</span>
+
+  <div class="t-right">
+    <div class="live"><div class="live-dot"></div>System Live</div>
+    <div class="t-sep"></div>
+    <div class="t-clock" id="clock">--:--:--</div>
+    <div class="t-sep"></div>
+    <div class="t-user">Operator: <strong>Parth Agarwal</strong></div>
+  </div>
+</div>
+
+<div class="body">
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="s-section">
+    <div class="s-label">Navigation</div>
+    <div class="s-item active">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Overview
+    </div>
+    <div class="s-item">
+      <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+      Transactions
+      <span class="s-badge">12</span>
+    </div>
+    <div class="s-item">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Users
+    </div>
+    <div class="s-item">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Alerts
+      <span class="s-badge">3</span>
+    </div>
+    <div class="s-item">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Reports
+    </div>
+  </div>
+
+  <div class="s-section">
+    <div class="s-label">System</div>
+    <div class="s-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </div>
+  </div>
+
+  <div class="m-card">
+    <div class="m-card-title">Model Status</div>
+    <div class="m-row"><span class="m-lbl">Architecture</span><span class="m-val">Transformer</span></div>
+    <div class="m-row"><span class="m-lbl">AUC-ROC</span><span class="m-val g">0.9564</span></div>
+    <div class="m-row"><span class="m-lbl">Recall</span><span class="m-val g">87.7%</span></div>
+    <div class="m-row"><span class="m-lbl">Precision</span><span class="m-val">46.7%</span></div>
+    <div class="m-row"><span class="m-lbl">Epochs</span><span class="m-val">20</span></div>
+    <div class="m-row"><span class="m-lbl">Status</span><span class="m-val g">● Active</span></div>
+    <div class="m-bar"><div class="m-bar-fill"></div></div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <div>
+    <div class="page-title">Overview</div>
+    <div class="page-sub">Real-time fraud intelligence · Last updated just now</div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics">
+    <div class="metric">
+      <div class="m-icon blue">📊</div>
+      <div class="metric-label">Total Analyzed</div>
+      <div class="metric-val">1.29M</div>
+      <div class="metric-foot"><span class="chip up">+2.4%</span> vs last month</div>
+    </div>
+    <div class="metric">
+      <div class="m-icon red">🚨</div>
+      <div class="metric-label">Fraud Detected</div>
+      <div class="metric-val">7,506</div>
+      <div class="metric-foot"><span class="chip dn">0.58%</span> fraud rate</div>
+    </div>
+    <div class="metric">
+      <div class="m-icon green">🎯</div>
+      <div class="metric-label">AUC-ROC Score</div>
+      <div class="metric-val">0.9564</div>
+      <div class="metric-foot"><span class="chip nu">Top 5%</span> of all models</div>
+    </div>
+    <div class="metric">
+      <div class="m-icon amber">⚡</div>
+      <div class="metric-label">Fraud Recall</div>
+      <div class="metric-val">87.7%</div>
+      <div class="metric-foot"><span class="chip up">Industry</span> leading</div>
+    </div>
+  </div>
+
+  <!-- Mid grid -->
+  <div class="mid-grid">
+
+    <!-- Bar chart -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title">Weekly Transaction Overview</div>
+        <div class="card-act">Export →</div>
+      </div>
+      <div class="card-body">
+        <canvas id="barChart" height="130"></canvas>
+      </div>
+      <div class="stat-strip">
+        <div class="stat-cell">
+          <div class="stat-label">This Week</div>
+          <div class="stat-val">28,249</div>
+          <div class="stat-sub">transactions</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Flagged</div>
+          <div class="stat-val" style="color:var(--red)">218</div>
+          <div class="stat-sub">for review</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Confirmed</div>
+          <div class="stat-val" style="color:var(--green)">81</div>
+          <div class="stat-sub">fraud cases</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress bars -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title">Fraud by Category</div>
+        <div class="card-act">Details →</div>
+      </div>
+      <div class="card-body">
+        <div class="progress-list">
+          <div class="prog-item">
+            <div class="prog-head"><span class="prog-label">Shopping</span><span class="prog-val">34%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:34%"></div></div>
+          </div>
+          <div class="prog-item">
+            <div class="prog-head"><span class="prog-label">ATM / Cash</span><span class="prog-val">28%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:28%"></div></div>
+          </div>
+          <div class="prog-item">
+            <div class="prog-head"><span class="prog-label">Travel</span><span class="prog-val">18%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:18%"></div></div>
+          </div>
+          <div class="prog-item">
+            <div class="prog-head"><span class="prog-label">Electronics</span><span class="prog-val">12%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:12%"></div></div>
+          </div>
+          <div class="prog-item">
+            <div class="prog-head"><span class="prog-label">Food & Dining</span><span class="prog-val">8%</span></div>
+            <div class="prog-bar"><div class="prog-fill" style="width:8%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-title">Recent Transactions</div>
+      <div class="card-act">View all →</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Account</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Time</th>
+            <th>Risk Level</th>
+          </tr>
+        </thead>
+        <tbody id="txn-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- Right Panel -->
+<div class="right">
+  <div class="rp-head">
+    <div class="rp-title">Transaction Analyzer</div>
+    <div class="rp-sub">Behavioral Transformer · AUC 0.9564</div>
+  </div>
+  <div class="rp-body">
+
+    <div class="fg">
+      <div class="field"><label>Amount (₹)</label><input type="number" id="amt" placeholder="0.00"/></div>
+      <div class="field"><label>Hour (0–23)</label><input type="number" id="hour" min="0" max="23" placeholder="12"/></div>
+    </div>
+    <div class="fg">
+      <div class="field"><label>User Avg Amount</label><input type="number" id="avg_amt" placeholder="1000"/></div>
+      <div class="field"><label>User Avg Hour</label><input type="number" id="avg_hour" placeholder="14"/></div>
+    </div>
+    <div class="fg">
+      <div class="field"><label>Std Deviation</label><input type="number" id="std_amt" placeholder="500"/></div>
+      <div class="field"><label>Category</label>
+        <select id="cat">
+          <option>Shopping</option><option>Food</option><option>Travel</option>
+          <option>Electronics</option><option>Healthcare</option><option>Fuel</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="run-btn" onclick="analyze()">Run Analysis</button>
+    <div class="rp-divider"></div>
+
+    <div class="result" id="result">
+      <div class="verdict" id="verdict">
+        <span class="v-icon" id="v-icon">●</span>
+        <span id="v-text">Awaiting input</span>
+      </div>
+      <div class="scores">
+        <div class="sc"><div class="sc-val" id="s-risk">—</div><div class="sc-lbl">Risk</div></div>
+        <div class="sc"><div class="sc-val" id="s-conf">—</div><div class="sc-lbl">Confidence</div></div>
+        <div class="sc"><div class="sc-val" id="s-dev">—</div><div class="sc-lbl">Deviation</div></div>
+      </div>
+      <div class="meter-wrap">
+        <div class="meter-head"><span>Threat Level</span><span id="m-pct" style="font-weight:600">0%</span></div>
+        <div class="meter-bar"><div class="meter-fill" id="m-fill" style="width:0%"></div></div>
+      </div>
+      <div class="flags" id="flags"></div>
+    </div>
+
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+// Clock
+setInterval(()=>{
+  document.getElementById('clock').textContent=
+    new Date().toLocaleTimeString('en-GB',{hour12:false})+' IST'
+},1000)
+
+// Bar Chart
+(function(){
+  const c=document.getElementById('barChart')
+  const ctx=c.getContext('2d')
+  const W=c.offsetWidth,H=130
+  c.width=W*devicePixelRatio;c.height=H*devicePixelRatio
+  ctx.scale(devicePixelRatio,devicePixelRatio)
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+  const legit=[4200,3800,5100,4600,3900,6200,4800]
+  const fraud=[42,31,58,44,29,81,37]
+  const max=Math.max(...legit)
+  const pad=20,gap=8
+  const grpW=(W-pad*2-gap*(days.length-1))/days.length
+  const bw=grpW*0.42
+
+  days.forEach((d,i)=>{
+    const gx=pad+i*(grpW+gap)
+    const lh=(legit[i]/max)*(H-30)
+    const fh=Math.max((fraud[i]/max)*(H-30)*6,4)
+
+    // grid line
+    ctx.strokeStyle='#f5f5f4';ctx.lineWidth=1
+    ctx.beginPath();ctx.moveTo(gx+grpW/2,0);ctx.lineTo(gx+grpW/2,H-20);ctx.stroke()
+
+    // legit
+    ctx.fillStyle='#e7e5e4'
+    ctx.beginPath();ctx.roundRect(gx,H-20-lh,bw,lh,3);ctx.fill()
+
+    // fraud
+    ctx.fillStyle='#b91c1c'
+    ctx.globalAlpha=0.8
+    ctx.beginPath();ctx.roundRect(gx+bw+3,H-20-Math.min(fh,H-30),bw,Math.min(fh,H-30),3);ctx.fill()
+    ctx.globalAlpha=1
+
+    // label
+    ctx.fillStyle='#a8a29e';ctx.font='500 10px Geist Mono';ctx.textAlign='center'
+    ctx.fillText(d,gx+grpW/2,H-4)
+  })
+
+  // legend
+  ctx.fillStyle='#e7e5e4';ctx.fillRect(6,6,10,8)
+  ctx.fillStyle='#78716c';ctx.font='10px Geist Mono';ctx.textAlign='left';ctx.fillText('Legit',20,14)
+  ctx.fillStyle='#b91c1c';ctx.globalAlpha=0.8;ctx.fillRect(56,6,10,8);ctx.globalAlpha=1
+  ctx.fillStyle='#78716c';ctx.fillText('Fraud',70,14)
+})()
+
+// Table
+const rows=[
+  {id:'TXN-8821',acc:'HDFC ··4821',amt:'₹2,340',cat:'Shopping',time:'2m ago',risk:'safe'},
+  {id:'TXN-9103',acc:'SBI ··9103',amt:'₹15,000',cat:'ATM',time:'11m ago',risk:'danger'},
+  {id:'TXN-3377',acc:'ICICI ··3377',amt:'₹450',cat:'Food',time:'24m ago',risk:'safe'},
+  {id:'TXN-6612',acc:'AXIS ··6612',amt:'₹3,200',cat:'Fuel',time:'1h ago',risk:'warn'},
+  {id:'TXN-2290',acc:'HDFC ··2290',amt:'₹12,800',cat:'Travel',time:'2h ago',risk:'warn'},
+  {id:'TXN-8841',acc:'PNB ··8841',amt:'₹48,999',cat:'Electronics',time:'3h ago',risk:'danger'},
+]
+const rl={safe:'Low Risk',warn:'Medium',danger:'High Risk'}
+const rc={safe:'b-safe',warn:'b-warn',danger:'b-danger'}
+const tb=document.getElementById('txn-body')
+rows.forEach(r=>{
+  tb.innerHTML+=`<tr>
+    <td><span class="td-mono">${r.id}</span></td>
+    <td><span class="td-bold">${r.acc}</span></td>
+    <td><span class="td-amt">${r.amt}</span></td>
+    <td>${r.cat}</td>
+    <td><span class="td-mono">${r.time}</span></td>
+    <td><span class="badge ${rc[r.risk]}"><span class="b-dot"></span>${rl[r.risk]}</span></td>
+  </tr>`
+})
+
+// Analyzer
+async function analyze() {
+  const amt      = parseFloat(document.getElementById('amt').value)      || 1000;
+  const hour     = parseInt(document.getElementById('hour').value)       || 12;
+  const avg_amt  = parseFloat(document.getElementById('avg_amt').value)  || 1000;
+  const avg_hour = parseFloat(document.getElementById('avg_hour').value) || 14;
+  const std_amt  = parseFloat(document.getElementById('std_amt').value)  || 500;
+  const cat      = document.getElementById('cat').value;
+
+  document.getElementById('result').classList.add('show');
+  document.getElementById('v-text').textContent = 'Analyzing...';
+  document.getElementById('verdict').className = 'verdict safe';
+
+  try {
+    const res = await fetch('http://localhost:5000/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amt: amt,
+        hour: hour,
+        day: new Date().getDate(),
+        category: cat,
+        cc_num: 0
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.status !== 'success') throw new Error(data.message);
+
+    const riskPct   = data.risk_pct;
+    const modelProb = data.model_prob;
+    const deviation = data.deviation;
+    const verdict   = data.verdict;
+    const reasons   = data.reasons;
+
+    let cls, icon, text, color;
+    if (verdict === 'LEGITIMATE') {
+      cls='safe'; icon='✓'; text='Legitimate Transaction'; color='green';
+    } else if (verdict === 'SUSPICIOUS') {
+      cls='warn'; icon='⚠'; text='Suspicious — Review Required'; color='orange';
+    } else {
+      cls='danger'; icon='✕'; text='Fraudulent Transaction Detected'; color='red';
+    }
+
+    document.getElementById('verdict').className   = 'verdict ' + cls;
+    document.getElementById('v-icon').textContent  = icon;
+    document.getElementById('v-text').textContent  = text;
+    document.getElementById('s-risk').textContent  = (riskPct/100).toFixed(2);
+    document.getElementById('s-conf').textContent  = (modelProb*100).toFixed(0) + '%';
+    document.getElementById('s-dev').textContent   = deviation.toFixed(2);
+    document.getElementById('m-fill').style.width  = riskPct + '%';
+
+    document.getElementById('flags').innerHTML =
+      reasons.map(r => `<div>${r}</div>`).join('');
+
+  } catch(err) {
+    document.getElementById('v-text').textContent = 'Error: ' + err.message;
+  }
+}
+</script>
+</body>
+</html>
